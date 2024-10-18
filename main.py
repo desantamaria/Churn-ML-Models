@@ -51,19 +51,19 @@ def preprocess_data(customer_dict):
 def get_prediction(customer_dict):
     preprocessed_data = preprocess_data(customer_dict)
     
+    # Get probabilities from models that support predict_proba
     probabilities = {
         'XGBoost': xgboost_model.predict_proba(preprocessed_data)[0][1],
         'Naive Bayes': naive_bayes_model.predict_proba(preprocessed_data)[0][1],
         'Random Forest': random_forest_model.predict_proba(preprocessed_data)[0][1],
         'Decision Tree': decision_tree_model.predict_proba(preprocessed_data)[0][1],
         'Extra Trees': extra_trees_model.predict_proba(preprocessed_data)[0][1],
-        'SVM': svm_model.predict_proba(preprocessed_data)[0][1],
         'K-Nearest Neighbors': knn_model.predict_proba(preprocessed_data)[0][1],
-        'Voting Classifier': voting_classifier_model.predict_proba(preprocessed_data)[0][1],
         'XGBoost-SMOTE': xgboost_SMOTE_model.predict_proba(preprocessed_data)[0][1],
         'XGBoost-FeatureEngineered': xgboost_featureEngineered_model.predict_proba(preprocessed_data)[0][1]
     }
     
+    # Get predictions from all models
     predictions = {
         'XGBoost': xgboost_model.predict(preprocessed_data)[0],
         'Naive Bayes': naive_bayes_model.predict(preprocessed_data)[0],
@@ -77,17 +77,14 @@ def get_prediction(customer_dict):
         'XGBoost-FeatureEngineered': xgboost_featureEngineered_model.predict(preprocessed_data)[0]
     }
     
-    avg_probability = np.mean(list(probabilities.values()))
-    avg_prediction = np.mean(list(predictions.values()))
-    
-    return avg_prediction, avg_probability
+    return probabilities, predictions
 
 # Endpoint to get predictions and probabilities
 @app.post("/predict")
 async def predict(data: dict):
-    prediction, probabilities = get_prediction(data)
+    predictions, probabilities = get_prediction(data)
     return {
-        "prediction": prediction.tolist(),
+        "prediction": predictions.tolist(),
         "probability": probabilities.tolist()
     }
 
