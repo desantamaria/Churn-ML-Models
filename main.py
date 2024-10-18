@@ -26,25 +26,37 @@ xgboost_featureEngineered_model = load_model('xgboost-featureEnginered.pkl')
 
 # Preprocess given data into a dataframe
 def preprocess_data(customer_dict):
+    # First, create the base input dictionary with exact feature names from training
     input_dict = {
         'CreditScore': customer_dict['CreditScore'],
         'Age': customer_dict['Age'],
-        "Tenure": customer_dict["Tenure"],
-        "Balance": customer_dict["Balance"],
-        "NumOfProducts": customer_dict["NumOfProducts"],
-        "HasCreditCard": customer_dict["HasCreditCard"],
-        "IsActiveMember": customer_dict["IsActiveMember"],
-        "EstimatedSalary": customer_dict["EstimatedSalary"],
-        "CLV": customer_dict["CLV"],
-        "Middle-Aged": customer_dict['Middle-Aged'],
-        "Senior": customer_dict['Senior'],
-        "Elderly": customer_dict['Elderly'],
-        "Geography_France": customer_dict['Geography_France'],
-        "Geography_Germany": customer_dict['Geography_Germany'],
-        "Geography_Spain": customer_dict['Geography_Spain'],
-        "Gender_Male": customer_dict['Gender_Male']
+        'Tenure': customer_dict['Tenure'],
+        'Balance': customer_dict['Balance'],
+        'NumOfProducts': customer_dict['NumOfProducts'],
+        'HasCrCard': customer_dict['HasCreditCard'],  # Changed from HasCreditCard to HasCrCard
+        'IsActiveMember': customer_dict['IsActiveMember'],
+        'EstimatedSalary': customer_dict['EstimatedSalary'],
+        'CLV': customer_dict['CLV'],
+        'TenureAgeRatio': customer_dict['Tenure'] / customer_dict['Age'],  # Calculate TenureAgeRatio
+        'Geography_Germany': customer_dict['Geography_Germany'],
+        'Geography_Spain': customer_dict['Geography_Spain'],
+        'Gender_Male': customer_dict['Gender_Male'],
+        'AgeGroup_Middle-Aged': customer_dict['Middle-Aged'],  # Changed from Middle-Aged to AgeGroup_Middle-Aged
+        'AgeGroup_Senior': customer_dict['Senior'],  # Changed from Senior to AgeGroup_Senior
+        'AgeGroup_Elderly': customer_dict['Elderly']  # Changed from Elderly to AgeGroup_Elderly
     }
+    
     customer_df = pd.DataFrame([input_dict])
+    
+    # Ensure columns are in the exact order expected by the model
+    expected_columns = [
+        'CreditScore', 'Age', 'Tenure', 'Balance', 'NumOfProducts', 'HasCrCard',
+        'IsActiveMember', 'EstimatedSalary', 'CLV', 'TenureAgeRatio',
+        'Geography_Germany', 'Geography_Spain', 'Gender_Male',
+        'AgeGroup_Middle-Aged', 'AgeGroup_Senior', 'AgeGroup_Elderly'
+    ]
+    
+    customer_df = customer_df[expected_columns]
     return customer_df
 
 # Get predictions and probabilities from all models and return average
@@ -77,14 +89,17 @@ def get_prediction(customer_dict):
         'XGBoost-FeatureEngineered': xgboost_featureEngineered_model.predict(preprocessed_data)[0]
     }
     
-    return probabilities, predictions
+    avg_probability = np.mean(list(probabilities.values()))
+    avg_prediction = np.mean(list(predictions.values()))
+    
+    return avg_prediction, avg_probability
 
 # Endpoint to get predictions and probabilities
 @app.post("/predict")
 async def predict(data: dict):
-    predictions, probabilities = get_prediction(data)
+    prediction, probabilities = get_prediction(data)
     return {
-        "prediction": predictions.tolist(),
+        "prediction": prediction.tolist(),
         "probability": probabilities.tolist()
     }
 
