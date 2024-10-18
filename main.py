@@ -71,7 +71,6 @@ def get_prediction(customer_dict):
         'Naive Bayes': naive_bayes_model.predict_proba(preprocessed_data)[0][1],
         'Decision Tree': decision_tree_model.predict_proba(preprocessed_data)[0][1],
         'Extra Trees': extra_trees_model.predict_proba(preprocessed_data)[0][1],
-        'SVM': svm_model.predict_proba(preprocessed_data)[0][1],
         'Voting Classifier': voting_classifier_model.predict_proba(preprocessed_data)[0][1],
         'XGBoost-SMOTE': xgboost_SMOTE_model.predict_proba(preprocessed_data)[0][1],
         'XGBoost-FeatureEngineered': xgboost_featureEngineered_model.predict_proba(preprocessed_data)[0][1],
@@ -79,14 +78,13 @@ def get_prediction(customer_dict):
     
     predictions = {
         'XGBoost': xgboost_model.predict(preprocessed_data)[0][1],
-        'Random Forest': random_forest_model.predict_proba(preprocessed_data)[0][1],
-        'K-Nearest Neighbors': knn_model.predict_proba(preprocessed_data)[0][1],
-        'Decision Tree': decision_tree_model.predict_proba(preprocessed_data)[0][1],
-        'Extra Trees': extra_trees_model.predict_proba(preprocessed_data)[0][1],
-        'SVM': svm_model.predict_proba(preprocessed_data)[0][1],
-        'Voting Classifier': voting_classifier_model.predict_proba(preprocessed_data)[0][1],
-        'XGBoost-SMOTE': xgboost_SMOTE_model.predict_proba(preprocessed_data)[0][1],
-        'XGBoost-FeatureEngineered': xgboost_featureEngineered_model.predict_proba(preprocessed_data)[0][1],
+        'Random Forest': random_forest_model.predict(preprocessed_data)[0][1],
+        'K-Nearest Neighbors': knn_model.predict(preprocessed_data)[0][1],
+        'Decision Tree': decision_tree_model.predict(preprocessed_data)[0][1],
+        'Extra Trees': extra_trees_model.predict(preprocessed_data)[0][1],
+        'Voting Classifier': voting_classifier_model.predict(preprocessed_data)[0][1],
+        'XGBoost-SMOTE': xgboost_SMOTE_model.predict(preprocessed_data)[0][1],
+        'XGBoost-FeatureEngineered': xgboost_featureEngineered_model.predict(preprocessed_data)[0][1],
     }
     
     avg_probability = np.mean(list(probabilities.values()))
