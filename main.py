@@ -96,8 +96,8 @@ def get_prediction(customer_dict):
 async def predict(data: dict):
     prediction, probabilities = get_prediction(data)
     return {
-        "prediction": prediction.tolist(),
-        "probability": probabilities.tolist()
+        "prediction": prediction,
+        "probability": probabilities
     }
 
 # Run the app
