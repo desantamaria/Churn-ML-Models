@@ -95,6 +95,11 @@ def get_prediction(customer_dict):
 @app.post("/predict")
 async def predict(data: dict):
     prediction, probabilities = get_prediction(data)
+
+    # Convert NumPy types to Python types
+    prediction = {model: int(pred) for model, pred in prediction.items()}
+    probabilities = {model: float(prob) for model, prob in probabilities.items()}
+
     return {
         "prediction": prediction,
         "probability": probabilities
